@@ -10,15 +10,18 @@ class WriteAheadLog {
         const logEntry = { index, timestamp, data: { key, value } };
         const logRow = `${index};${timestamp};${JSON.stringify(logEntry.data)}\n`;
 
-        fs.appendFile('wal.log', logRow, (err) => {
-            if (err) {
-                console.error('Error writing to WAL log:', err);
-            }
-        });
+        fs.appendFileSync('wal.log', logRow, 'utf8');
     }
 
+    // this approach can be harmful to performance
     getNewestIndex() {
+
+        if (!fs.existsSync('wal.log')) {
+            fs.writeFileSync('wal.log', '');
+            return -1; // if no content
+        }
         const logContent = fs.readFileSync('wal.log', 'utf8');
+
         const logRows = logContent.split('\n');
         let newestIndex = -1;
 
@@ -37,6 +40,7 @@ class WriteAheadLog {
 
 let wal = new WriteAheadLog();
 wal.appendLog('name', 'Alice');
-console.log(wal.getNewestIndex());
+wal.appendLog('name', 'Bob');
+
 
 

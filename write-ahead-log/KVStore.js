@@ -1,9 +1,14 @@
-const fs = require('fs');
+import WriteAheadLog from './WriteAheadLog.js';
 
 class KVStore {
-    constructor() {
+
+    constructor(logPath) {
         this.kv = new Map();
-        this.logId = 0; // Initialize the log ID
+        this.wal = new WriteAheadLog(logPath);
+    }
+
+    getMap() {  
+        return this.kv;
     }
 
     get(key) {
@@ -11,32 +16,22 @@ class KVStore {
     }
 
     put(key, value) {
+        this.wal.writeEntry(key, value);
         this.kv.set(key, value);
     }
 
-    appendLog(key, value) {
-        const index = this.logId++;
-        const timestamp = new Date().toISOString();
-        const logEntry = { index, timestamp, data: { key, value } };
-        const logRow = `${index};${timestamp};${JSON.stringify(logEntry)}\n`;
-
-        fs.appendFile('wal.log', logRow, (err) => {
-            if (err) {
-                console.error('Error writing to WAL log:', err);
-            }
-        });
-    }
 }
 
-class WALEntry {
-    constructor(index, data, type, timestamp) {
-        this.index = index;
-        this.data = data;
-        this.type = type;
-        this.timestamp = timestamp;
-    }
-}
+export default KVStore;
+
+// class WALEntry {
+//     constructor(index, data, type, timestamp) {
+//         this.index = index;
+//         this.data = data;
+//         this.type = type;
+//         this.timestamp = timestamp;
+//     }
+// }
 
 
-module.exports = KVStore;
 

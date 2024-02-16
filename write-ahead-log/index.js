@@ -1,18 +1,8 @@
-// const express = require('express');
-// const app = express();
-// const port = 3000;
+import KVStore from './KVStore.js';
 
-// // Middleware to parse JSON requests
-// app.use(express.json());
-
-// // Sample route
-// app.get('/api/hello', (req, res) => {
-//   res.json({ message: 'Hello, world!' });
-// });
-
-// // Start the server
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
-
-
+let kv = new KVStore('wal1.log');
+kv.put('name', 'Alice');
+kv.put('age', 12);
+kv.put('name', 'Bob');
+kv.put('age', 13);
+console.log(kv.getMap());

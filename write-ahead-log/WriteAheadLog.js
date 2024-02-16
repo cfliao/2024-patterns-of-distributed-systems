@@ -1,26 +1,29 @@
-const fs = require('fs');
+import e from 'express';
+import fs from 'node:fs';
+
 
 class WriteAheadLog {
-    constructor() {
+    constructor(logPath) {
+        this.logPath = logPath;
     }
 
-    appendLog(key, value) {
+    writeEntry(key, value) {
         const index = this.getNewestIndex() + 1;
         const timestamp = new Date().toISOString();
         const logEntry = { index, timestamp, data: { key, value } };
         const logRow = `${index};${timestamp};${JSON.stringify(logEntry.data)}\n`;
 
-        fs.appendFileSync('wal.log', logRow, 'utf8');
+        fs.appendFileSync(this.logPath, logRow, 'utf8');
     }
 
     // this approach can be harmful to performance
     getNewestIndex() {
 
-        if (!fs.existsSync('wal.log')) {
-            fs.writeFileSync('wal.log', '');
+        if (!fs.existsSync(this.logPath)) {
+            fs.writeFileSync(this.logPath, '');
             return -1; // if no content
         }
-        const logContent = fs.readFileSync('wal.log', 'utf8');
+        const logContent = fs.readFileSync(this.logPath, 'utf8');
 
         const logRows = logContent.split('\n');
         let newestIndex = -1;
@@ -38,9 +41,11 @@ class WriteAheadLog {
     }
 }
 
-let wal = new WriteAheadLog();
-wal.appendLog('name', 'Alice');
-wal.appendLog('name', 'Bob');
+export default WriteAheadLog;
+
+// let wal = new WriteAheadLog();
+// wal.appendLog('name', 'Alice');
+// wal.appendLog('name', 'Bob');
 
 
 

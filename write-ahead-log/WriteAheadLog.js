@@ -46,9 +46,6 @@ class WriteAheadLog {
 
 export default WriteAheadLog;
 
-// let wal = new WriteAheadLog();
-// wal.appendLog('name', 'Alice');
-// wal.appendLog('name', 'Bob');
 
 
 

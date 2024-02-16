@@ -26,10 +26,6 @@ class WriteAheadLog {
     // this approach can be harmful to performance
     getNewestIndex() {
 
-        // if (!fs.existsSync(this.logPath)) {
-        //     fs.writeFileSync(this.logPath, '');
-        //     return -1; // if no content
-        // }
         const logContent = this.getLogContent();
 
         const logRows = logContent.split('\n');

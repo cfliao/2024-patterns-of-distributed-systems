@@ -37,14 +37,6 @@ class KVStore {
 
 export default KVStore;
 
-// class WALEntry {
-//     constructor(index, data, type, timestamp) {
-//         this.index = index;
-//         this.data = data;
-//         this.type = type;
-//         this.timestamp = timestamp;
-//     }
-// }
 
 
 

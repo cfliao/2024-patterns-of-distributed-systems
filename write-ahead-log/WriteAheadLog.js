@@ -1,4 +1,3 @@
-import e from 'express';
 import fs from 'node:fs';
 
 
@@ -16,14 +15,22 @@ class WriteAheadLog {
         fs.appendFileSync(this.logPath, logRow, 'utf8');
     }
 
+    getLogContent() {
+        if (!fs.existsSync(this.logPath)) {
+            fs.writeFileSync(this.logPath, '');
+            return '';
+        }
+        return fs.readFileSync(this.logPath, 'utf8');
+    }
+
     // this approach can be harmful to performance
     getNewestIndex() {
 
-        if (!fs.existsSync(this.logPath)) {
-            fs.writeFileSync(this.logPath, '');
-            return -1; // if no content
-        }
-        const logContent = fs.readFileSync(this.logPath, 'utf8');
+        // if (!fs.existsSync(this.logPath)) {
+        //     fs.writeFileSync(this.logPath, '');
+        //     return -1; // if no content
+        // }
+        const logContent = this.getLogContent();
 
         const logRows = logContent.split('\n');
         let newestIndex = -1;
@@ -42,7 +49,7 @@ class WriteAheadLog {
 }
 
 export default WriteAheadLog;
- 
+
 // let wal = new WriteAheadLog();
 // wal.appendLog('name', 'Alice');
 // wal.appendLog('name', 'Bob');

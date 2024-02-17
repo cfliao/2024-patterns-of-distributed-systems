@@ -14,13 +14,21 @@ class KVStore {
         for (const row of logRows) {
             if (row.trim() !== '') {
                 const [index, timestamp, data] = row.split(';');
-                const { key, value } = JSON.parse(data);
-                this.kv.set(key, value);
+
+                if (data.startsWith('[')) {
+                    const map = new Map(JSON.parse(data));
+                    for (const [key, value] of map.entries()) {
+                        this.kv.set(key, value);
+                    }
+                } else {
+                    const { key, value } = JSON.parse(data);
+                    this.kv.set(key, value);
+                }
             }
         }
     }
 
-    getMap() {  
+    getMap() {
         return this.kv;
     }
 
@@ -31,6 +39,14 @@ class KVStore {
     put(key, value) {
         this.wal.writeEntry(key, value);
         this.kv.set(key, value);
+    }
+
+    putBatch(map) {
+        this.wal.writeBatch(map.entries());
+
+        for (const [key, value] of map.entries()) {
+            this.kv.set(key, value);
+        }
     }
 
 }

@@ -7,11 +7,12 @@ This repository contains code used to explore and understand the patterns presen
 ### Write-Ahead Log
 
 #### Points to observe
-* persist every command (i.e., create, update, and delete; currently only update is implemented) to an append-only log file.
-* each entry(command) stored in the log is executed from the first to the last whenever the program restart (KVStore.js)
-* support transaction semantics (a list of commands, which either success or fail together)
+* All commands (i.e., create, update, and delete; currently, only update is implemented) are sequentially stored in an append-only log file.
+* Each command entry in the log is sequentially executed from the first to the last whenever the program restarts (see KVStore.js).
+* Supports transaction semantics, meaning it can process a list of commands that either all succeed or all fail together.
 
 #### Implementation consideration
-* write to log before real modification (therefore called Write-Ahead)
-* serialization format can be a design issue
-* to support transaction semantics, one must write entire batch of commands in a single entry in the log
+* Modifications are logged before they are actually applied, hence the term 'Write-Ahead.
+* The choice of serialization format can present a design challenge.
+* To uphold transaction semantics, an entire batch of commands must be written as a single entry in the log.
+

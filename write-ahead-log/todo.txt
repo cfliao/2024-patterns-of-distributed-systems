@@ -1,1 +1,3 @@
-Add Transactional/Batch put and restore
+* the performance issue of getNewestIndex() in WriteAheadLog.js
+* refactor the clutter code in restoreFromLog()
+* use functional style to replace for loop

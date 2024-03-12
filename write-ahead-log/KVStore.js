@@ -2,9 +2,10 @@ import WriteAheadLog from './WriteAheadLog.js';
 
 class KVStore {
 
-    constructor(logPath) {
+    constructor(logPath,rotateSize) {
         this.kv = new Map();
-        this.wal = new WriteAheadLog(logPath);
+        this.wal = new WriteAheadLog(logPath,rotateSize);
+        this.wal.maybeRotate();
         this.restoreFromLog();
     }
 
@@ -39,6 +40,7 @@ class KVStore {
     put(key, value) {
         this.wal.writeEntry(key, value);
         this.kv.set(key, value);
+        this.wal.maybeRotate();
     }
 
     putBatch(map) {
@@ -47,12 +49,14 @@ class KVStore {
         for (const [key, value] of map.entries()) {
             this.kv.set(key, value);
         }
+        this.wal.maybeRotate();
     }
+
+
 
 }
 
 export default KVStore;
-
 
 
 

@@ -94,12 +94,6 @@ class WriteAheadLog {
         return this.rotateSize;
     }
 
-    //count the current file's line numbers
-    getFileLine_Numbers(){
-        const FileLine_Numbers = this.getLogContent().split('\n');
-        return FileLine_Numbers;
-    }
-
     //get the log's file index
     getBaseOffsetFromFileName(filePath) {
         const FileName = path.basename(filePath);

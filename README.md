@@ -20,11 +20,17 @@ This repository contains code used to explore and understand the patterns presen
 ### Segmented Log
 * The concept is similar to log rotation, when it exceeds a certain size, it will be replaced by writing to another new file.
     * 要多大size才rotate是一個WAL的參數，可以和WAL的相關參數合併處理
-* 格式: <logPrefix>_startIndex+logSuffix; 例如myfile_001.log, myfile_002.log,...
+* 格式: wal_startIndex+logSuffix; 例如:wal_1.log, wal_2.log,...
 * 書中第79頁的程式碼中有一個openSegment沒有解釋得很清楚，它的意思是當startIndex較新，沒有用到其它的segment log，而是只需要目前正在開啟的log，此時也要將這個segment加入segments中
 * 實作的重點在於檔案的命名，在書中建議的格式是prefix-logSequenceNumber-suffix; logSequenceNumber的數值為該log中第一筆record的index
 * 實作上，給定一個startIndex，以此決定要讀取那幾個log files，將這些log files中的records逐一匯入; 這個startIndex(可能)是Low-Water Mark
 * 如何有效率且(考慮race condition狀況:正確地)得到log的狀況(如目前最大的startIndex或是open segment中最新一筆index number)是一個可以考量的議題，這也可以擴大會log management議題
+#### current state of Implementation
+* 寫入檔案時，會依照log檔資料夾(例如:LogFile)中最新的log檔寫入。依照主程式內寫的rotate size，若超過即會新建下一個檔案
+    * log檔資料夾預設為空的，寫入第一筆資料時會自動新建wal_1.log
+* 目前有一些東西可以調整，log files 的prefix 名稱調整，logSequenceNumber沒有依書中的建議格式為第一筆record的index，LogFile名稱、位置等。
+    * 目前是獨立寫1,2,3,4等等，可以用簡單的數學去修正。
+* Rotate時會將整行全部copy到下一個檔案再將原檔案的內容刪除。
 
 ### Low-Water Mark
 * 主要的想法是另外有一個獨立的thread/process在背景依據一定規則清理log; 清理的邊界就叫做Low-Water Mark
